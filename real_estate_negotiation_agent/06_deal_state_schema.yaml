@@ -1,0 +1,106 @@
+# 06. Схема состояния сделки
+# Заполняется человеком (секция buyer, authority) и агентом (остальное).
+# Секции с пометкой SECRET никогда не попадают в текст сообщений контрагенту.
+
+deal_id: "2026-09-flat-001"
+language: "ru"                 # язык переписки; агент зеркалит язык собеседника
+currency: "EUR"
+
+# ---------- Покупатель и полномочия (заполняет человек) ----------
+buyer:
+  display_name: "Роберт"
+  ai_disclosure_mode: "assistant_on_behalf"   # assistant_on_behalf | human_signature_reviewed (см. 07)
+  purpose: "own_use"                           # own_use | investment | rental
+  payment: "mortgage_preapproved"              # cash | mortgage_preapproved | mortgage_pending | installment
+  can_close_within_days: 30
+  flexible_handover: true
+  real_deadline: null                          # ISO-дата, если есть реальный срок; можно раскрывать как аргумент
+  must_haves: ["legal_check", "inspection"]
+  nice_to_haves: ["kitchen_appliances", "parking"]
+  tradeables:                                  # чем агенту разрешено торговать без согласования
+    fast_closing: true
+    flexible_handover_date: true
+    rent_back_up_to_days: 30
+    buy_as_is_cosmetic_only: true
+    exclude_furniture: true
+    larger_deposit: false                       # только с одобрения
+    waive_inspection: false                     # никогда без человека
+
+authority:                      # SECRET
+  walk_away_price: 235000       # W — реальный максимум
+  target_price: null            # T — рассчитывается калькулятором, можно переопределить
+  authority_limit: 228000       # до этой цифры агент двигается сам
+  approval_channel: "telegram:@owner"
+
+alternatives:                   # SECRET в деталях; упоминать можно только обобщённо и только правду
+  - id: "alt-1"
+    url: "https://..."
+    list_price: 241000
+    status: "viewed"            # found | contacted | viewed | offer_made | rejected
+    comparable_price_per_m2: 3350
+  - id: "alt-2"
+    url: "https://..."
+    list_price: 226000
+    status: "contacted"
+
+# ---------- Объект ----------
+property:
+  address: "ул. Примерная, 10, кв. 5"
+  listing_url: "https://..."
+  type: "apartment"             # apartment | house | new_build | land | commercial
+  area_m2: 72
+  list_price: 250000            # L
+  first_listed_at: "2026-04-02"
+  price_history:
+    - {date: "2026-04-02", price: 265000}
+    - {date: "2026-07-15", price: 250000}
+  owner_purchase_price: 210000  # если известна из реестра (референтная точка продавца)
+  owner_purchase_year: 2019
+  included: ["kitchen", "wardrobes"]
+  defects:
+    - {item: "окна (деревянные, продувают)", estimated_cost: 6000, source: "типовая смета"}
+    - {item: "газовый котёл 2004 г.", estimated_cost: 3000, source: "прайс установщика"}
+  red_flags: []                  # см. 07: мошенничество/юридические риски
+
+market:
+  comparables:
+    - {address: "...", price: 231000, area_m2: 70, status: "sold", date: "2026-06", condition: "similar"}
+    - {address: "...", price: 244000, area_m2: 74, status: "listed", date: "2026-08", condition: "renovated"}
+    - {address: "...", price: 214000, area_m2: 68, status: "sold", date: "2026-05", condition: "worse"}
+  median_days_on_market: 60
+  median_sale_to_list_discount: 0.045
+  trend: "flat"                  # rising | flat | falling
+  season: "low"
+
+# ---------- Контрагент ----------
+counterpart:
+  type: "listing_agent"         # listing_agent | owner | developer | dual_agent
+  name: "Анна"
+  agency: "..."
+  style: "formal"               # formal | casual | terse | emotional
+  uses_emoji: false
+  responsiveness_hours_median: null
+  seller_motivation: null       # relocation | divorce | inheritance | financial | upgrade | investor | unknown
+  seller_timeline: null
+  seller_bought_replacement: null
+  other_buyers_claimed: []      # [{date, claim, verified: false}]
+  statements_log: []            # [{date, who, text, category}] — все значимые заявления, для C7/C18
+
+# ---------- Переговоры ----------
+negotiation:
+  stage: "S0"
+  leverage_score: null
+  leverage_breakdown: {}
+  fair_value: null              # FV
+  defensible_floor: null
+  anchor: null                  # A
+  concession_plan: []           # [A, r1, r2, r3, T] — считается кодом
+  concession_round: 0
+  our_offers: []                # [{date, price, conditions, valid_until}]
+  seller_offers: []             # [{date, price, conditions}]
+  final_offer_used: false       # «финальное» можно использовать один раз
+  agreed_terms: null
+  last_message_at: null
+  next_follow_up: null
+  follow_up_count: 0
+  escalations: []               # [{date, reason, decision}]

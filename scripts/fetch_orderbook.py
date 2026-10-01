@@ -19,7 +19,8 @@ from pathlib import Path
 import pandas as pd
 
 UA = {"User-Agent": "Mozilla/5.0 (research)"}
-BANDS_BPS = [1, 2, 5, 10, 25]          # cumulative depth within N bps of the touch
+import os as _os
+BANDS_BPS = [float(x) for x in _os.environ.get("OB_BANDS", "1,2,5,10,25").split(",")]  # cumulative depth within N bps of the touch
 BYBIT = "https://quote-saver.bycsi.com/orderbook/{cat}/{sym}/{d}_{sym}_ob200.data.zip"
 OKX = ("https://static.okx.com/cdn/okx/match/orderbook/pro/L2/{lv}/daily/{dcompact}/"
        "{inst}-L2orderbook-{lv}-{d}.tar.gz")
